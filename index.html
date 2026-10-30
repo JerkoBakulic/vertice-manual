@@ -1,0 +1,598 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Manual de primeros días · Vértice Restaurant</title>
+<meta name="description" content="Cómo funciona el restaurant con Vértice Restaurant: del garzón que comanda a la caja que cobra y cierra el día, con las pantallas reales del sistema.">
+<meta property="og:title" content="Primeros días con Vértice Restaurant">
+<meta property="og:description" content="Del garzón que comanda a la caja que cobra y cierra el día.">
+<meta property="og:image" content="img/09-comanda-lista.png">
+<link rel="icon" href="img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;700&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Estilo: capítulos a pantalla completa, mucho aire, pantallas reales grandes y centradas; tipografía grande y liviana; un solo azul de acento. */
+:root {
+  --tinta: #14294a;
+  --marca: #2f7ad9;
+  --marca-suave: #eaf1fb;
+  --fondo: #ffffff;
+  --niebla: #f4f5f7;
+  --gris: #5c6573;
+  --linea: #e3e6eb;
+  --alerta: #a5520a;
+  --alerta-suave: #fdf3e7;
+  --f-titulo: "Red Hat Display", "Segoe UI", system-ui, sans-serif;
+  --f-texto: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --f-dato: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  --nav: 60px;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: calc(var(--nav) + 12px); }
+body { margin: 0; background: var(--fondo); color: var(--tinta); font: 17px/1.6 var(--f-texto); -webkit-font-smoothing: antialiased; }
+img { max-width: 100%; display: block; height: auto; }
+a { color: inherit; }
+h1, h2, h3 { font-family: var(--f-titulo); margin: 0; text-wrap: balance; letter-spacing: -.01em; }
+p { margin: 0; }
+.envoltura { width: 100%; max-width: 1180px; margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left)); padding-right: max(20px, env(safe-area-inset-right)); }
+.boton-txt { font-weight: 700; color: var(--marca); white-space: nowrap; }
+.dato { font-family: var(--f-dato); font-size: .85em; font-weight: 700; background: var(--marca-suave); padding: .05em .4em; border-radius: 4px; white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+/* Barra superior */
+.nav { position: fixed; inset: 0 0 auto; z-index: 50; height: calc(var(--nav) + env(safe-area-inset-top)); padding-top: env(safe-area-inset-top); background: rgba(255,255,255,.82); backdrop-filter: saturate(180%) blur(14px); -webkit-backdrop-filter: saturate(180%) blur(14px); border-bottom: 1px solid transparent; transition: border-color .2s; }
+.nav.con-borde { border-bottom-color: var(--linea); }
+.nav .envoltura { height: var(--nav); display: flex; align-items: center; gap: 16px; }
+.marca { display: flex; align-items: center; gap: 10px; text-decoration: none; font-family: var(--f-titulo); font-weight: 700; letter-spacing: .22em; font-size: 14px; white-space: nowrap; }
+.marca img { width: 30px; height: 30px; mix-blend-mode: multiply; }
+.links { display: flex; gap: 4px; margin: 0 auto; }
+.links a { text-decoration: none; font-family: var(--f-titulo); font-weight: 500; font-size: 14px; padding: 7px 12px; border-radius: 8px; transition: background .15s; }
+.links a:hover, .links a:focus-visible { background: rgba(20,41,74,.07); outline: none; }
+.abrir-buscar { display: flex; align-items: center; gap: 10px; height: 38px; min-width: 210px; padding: 0 10px 0 12px; border: 1px solid var(--linea); border-radius: 10px; background: var(--niebla); color: var(--gris); font: 14px var(--f-texto); cursor: pointer; }
+.abrir-buscar:hover { border-color: #c9ced7; }
+.abrir-buscar:focus-visible { outline: 2px solid var(--marca); outline-offset: 2px; }
+.abrir-buscar kbd { margin-left: auto; font: 11px var(--f-dato); border: 1px solid var(--linea); background: var(--fondo); border-radius: 5px; padding: 1px 6px; }
+.pdf-nav { text-decoration: none; font-family: var(--f-titulo); font-weight: 700; font-size: 14px; padding: 8px 14px; border-radius: 8px; background: var(--tinta); color: #fff; white-space: nowrap; }
+@media (max-width: 980px) { .links { display: none; } .abrir-buscar { margin-left: auto; } }
+@media (max-width: 560px) { .marca span { display: none; } .abrir-buscar { min-width: 0; flex: 1; } .abrir-buscar kbd { display: none; } .pdf-nav { padding: 8px 12px; } }
+
+/* Portada */
+.hero { min-height: 100svh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding-top: calc(var(--nav) + env(safe-area-inset-top) + 48px); padding-bottom: 56px; background: linear-gradient(180deg, #fff 0%, var(--niebla) 100%); overflow: hidden; }
+.hero .envoltura { display: grid; justify-items: center; gap: 18px; }
+.hero .eyebrow { font-family: var(--f-titulo); font-weight: 700; font-size: 13px; letter-spacing: .24em; text-transform: uppercase; color: var(--marca); }
+.hero h1 { font-weight: 500; font-size: clamp(40px, 7.4vw, 88px); line-height: 1.02; letter-spacing: -.03em; max-width: 14ch; }
+.hero .bajada { font-size: clamp(17px, 2vw, 21px); color: var(--gris); max-width: 40ch; }
+.acciones { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
+.pill { display: inline-flex; align-items: center; justify-content: center; min-width: 220px; height: 44px; padding: 0 26px; border-radius: 8px; text-decoration: none; font-family: var(--f-titulo); font-weight: 700; font-size: 15px; transition: transform .15s, background .15s; }
+.pill:active { transform: scale(.98); }
+.pill.oscura { background: var(--tinta); color: #fff; }
+.pill.oscura:hover { background: #0d1d36; }
+.pill.clara { background: rgba(255,255,255,.9); color: var(--tinta); box-shadow: inset 0 0 0 1px var(--linea); }
+.pill.clara:hover { background: #fff; }
+.pill:focus-visible { outline: 2px solid var(--marca); outline-offset: 3px; }
+.hero-pantalla { margin-top: 44px; width: min(1080px, 100%); border-radius: 14px; overflow: hidden; box-shadow: 0 30px 80px -20px rgba(20,41,74,.35), 0 0 0 1px rgba(20,41,74,.06); animation: subir .9s cubic-bezier(.2,.7,.2,1) both .1s; }
+@keyframes subir { from { transform: translateY(24px); opacity: .4; } to { transform: none; opacity: 1; } }
+@media (max-width: 560px) { .pill { min-width: 0; width: 100%; } .acciones { width: 100%; } }
+
+/* Cifras */
+.cifras { border-block: 1px solid var(--linea); }
+.cifras .envoltura { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.cifra { padding: 28px 12px; text-align: center; display: grid; gap: 2px; }
+.cifra + .cifra { border-left: 1px solid var(--linea); }
+.cifra b { font-family: var(--f-titulo); font-weight: 500; font-size: clamp(28px, 4vw, 40px); line-height: 1.1; font-variant-numeric: tabular-nums; }
+.cifra span { font-size: 14px; color: var(--gris); }
+@media (max-width: 700px) { .cifras .envoltura { grid-template-columns: repeat(2, minmax(0, 1fr)); } .cifra:nth-child(3) { border-left: 0; } .cifra:nth-child(n+3) { border-top: 1px solid var(--linea); } }
+
+/* Gracias */
+.gracias { padding-block: clamp(72px, 11vw, 140px); text-align: center; }
+.gracias .envoltura { display: grid; gap: 22px; justify-items: center; }
+.gracias h2 { font-weight: 500; font-size: clamp(32px, 5vw, 56px); }
+.gracias p { max-width: 62ch; color: var(--gris); font-size: 18px; }
+.regla { margin-top: 12px; max-width: 720px; text-align: left; border-left: 3px solid var(--marca); padding: 18px 22px; background: var(--marca-suave); border-radius: 0 10px 10px 0; display: grid; gap: 4px; }
+.regla small { font-family: var(--f-titulo); font-weight: 700; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--marca); }
+.regla p { color: var(--tinta); font-size: 17px; }
+
+/* Recorrido */
+.recorrido { background: var(--niebla); padding-block: clamp(64px, 9vw, 110px); }
+.recorrido h2 { font-weight: 500; font-size: clamp(28px, 4vw, 44px); text-align: center; margin-bottom: 36px; }
+.viaje { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; counter-reset: v; }
+.viaje a { display: grid; gap: 4px; align-content: start; height: 100%; padding: 18px 14px; border-radius: 12px; background: #fff; text-decoration: none; box-shadow: 0 0 0 1px var(--linea); transition: box-shadow .15s, transform .15s; }
+.viaje a:hover, .viaje a:focus-visible { box-shadow: 0 0 0 2px var(--marca); transform: translateY(-2px); outline: none; }
+.viaje a::before { counter-increment: v; content: "0" counter(v); font-family: var(--f-dato); font-size: 13px; font-weight: 700; color: var(--marca); }
+.viaje b { font-family: var(--f-titulo); font-size: 16px; line-height: 1.2; }
+.viaje small { color: var(--gris); font-size: 13px; line-height: 1.35; }
+.viaje .acento a { background: var(--tinta); color: #fff; box-shadow: none; }
+.viaje .acento a::before, .viaje .acento small { color: #bcd3f3; }
+.nota-viaje { text-align: center; color: var(--gris); font-size: 15px; margin-top: 22px; }
+@media (max-width: 980px) { .viaje { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .viaje { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* Capítulos */
+.capitulo { min-height: 82svh; display: flex; align-items: center; text-align: center; padding-block: 96px 40px; }
+.capitulo .envoltura { display: grid; gap: 16px; justify-items: center; }
+.capitulo .num { font-family: var(--f-dato); font-weight: 700; color: var(--marca); letter-spacing: .1em; font-size: 14px; }
+.capitulo h2 { font-weight: 500; font-size: clamp(38px, 6.6vw, 80px); line-height: 1.04; letter-spacing: -.03em; max-width: 16ch; }
+.capitulo .lead { font-size: clamp(17px, 2vw, 21px); color: var(--gris); max-width: 46ch; }
+.quien { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.quien span { font-family: var(--f-titulo); font-weight: 700; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--gris); border: 1px solid var(--linea); border-radius: 999px; padding: 4px 12px; }
+.contenido { padding-bottom: clamp(64px, 9vw, 120px); }
+.contenido .envoltura { display: grid; gap: clamp(56px, 8vw, 96px); }
+
+.paso { display: grid; gap: 22px; scroll-margin-top: calc(var(--nav) + 16px); }
+.paso .pantalla { border-radius: 14px; overflow: hidden; background: var(--niebla); box-shadow: 0 24px 60px -24px rgba(20,41,74,.32), 0 0 0 1px rgba(20,41,74,.06); }
+.paso .ficha { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 8px 32px; max-width: 980px; width: 100%; margin: 0 auto; }
+.paso .ficha .n { font-family: var(--f-dato); font-weight: 700; color: var(--marca); font-size: 14px; padding-top: 6px; }
+.paso .ficha h3 { font-weight: 500; font-size: clamp(24px, 3vw, 32px); line-height: 1.15; }
+.paso .ficha p { grid-column: 2; color: var(--gris); max-width: 64ch; }
+.paso.sin-imagen .ficha { padding-block: 8px; border-top: 1px solid var(--linea); padding-top: 28px; }
+@media (max-width: 700px) { .paso .ficha { grid-template-columns: minmax(0, 1fr); } .paso .ficha p { grid-column: 1; } .paso .pantalla { border-radius: 10px; } }
+
+.lista { max-width: 980px; margin: 0 auto; width: 100%; display: grid; gap: 0; }
+.lista > div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); gap: 8px 32px; padding: 20px 0; border-top: 1px solid var(--linea); scroll-margin-top: calc(var(--nav) + 16px); }
+.lista > div:last-child { border-bottom: 1px solid var(--linea); }
+.lista b { font-family: var(--f-titulo); font-weight: 700; font-size: 18px; }
+.lista span { color: var(--gris); }
+@media (max-width: 700px) { .lista > div { grid-template-columns: minmax(0, 1fr); } }
+
+.aviso { max-width: 980px; margin: 0 auto; width: 100%; padding: 22px 26px; border-radius: 12px; display: grid; gap: 6px; background: var(--alerta-suave); scroll-margin-top: calc(var(--nav) + 16px); }
+.aviso small { font-family: var(--f-titulo); font-weight: 700; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--alerta); }
+.aviso.azul { background: var(--marca-suave); } .aviso.azul small { color: var(--marca); }
+.estados { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.estados span { border: 1px solid var(--linea); border-radius: 8px; padding: 6px 14px; font-size: 15px; }
+
+/* Soporte y pie */
+.soporte { background: var(--tinta); color: #fff; text-align: center; padding-block: clamp(80px, 12vw, 150px); }
+.soporte .envoltura { display: grid; gap: 20px; justify-items: center; }
+.soporte .num { font-family: var(--f-dato); font-weight: 700; color: #8fb6ee; letter-spacing: .1em; font-size: 14px; }
+.soporte h2 { font-weight: 500; font-size: clamp(38px, 6vw, 72px); }
+.soporte p { color: #c7d3e6; max-width: 52ch; font-size: 18px; }
+.contactos { display: grid; grid-template-columns: repeat(2, minmax(0, 260px)); gap: 12px; margin-top: 12px; }
+.contactos div { border: 1px dashed rgba(255,255,255,.3); border-radius: 12px; padding: 18px; display: grid; gap: 4px; }
+.contactos small { font-family: var(--f-titulo); font-weight: 700; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: #8fb6ee; }
+.contactos span { font-family: var(--f-dato); color: #c7d3e6; }
+.soporte .pill.clara { margin-top: 14px; }
+@media (max-width: 560px) { .contactos { grid-template-columns: minmax(0, 1fr); width: 100%; } }
+footer { padding-block: 28px calc(28px + env(safe-area-inset-bottom)); font-size: 13px; color: var(--gris); }
+footer .envoltura { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+/* Buscador */
+.buscador { position: fixed; inset: 0; z-index: 100; display: grid; align-items: start; justify-items: center; padding: calc(env(safe-area-inset-top) + 12vh) max(16px, env(safe-area-inset-right)) 16px max(16px, env(safe-area-inset-left)); background: rgba(20,41,74,.28); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.buscador[hidden] { display: none; }
+.caja-buscar { width: min(640px, 100%); background: #fff; border-radius: 14px; box-shadow: 0 30px 80px -20px rgba(20,41,74,.45); overflow: hidden; display: grid; grid-template-rows: auto minmax(0, 1fr); max-height: 70vh; }
+.campo { display: flex; align-items: center; gap: 10px; padding: 0 16px; border-bottom: 1px solid var(--linea); }
+.campo svg { flex: none; color: var(--gris); }
+.campo input { flex: 1; min-width: 0; height: 58px; border: 0; outline: 0; font: 18px var(--f-texto); color: var(--tinta); background: transparent; }
+.campo button { border: 0; background: var(--niebla); border-radius: 6px; font: 12px var(--f-dato); padding: 5px 8px; color: var(--gris); cursor: pointer; }
+.resultados { list-style: none; margin: 0; padding: 8px; overflow-y: auto; }
+.resultados li a { display: grid; gap: 2px; padding: 12px 14px; border-radius: 10px; text-decoration: none; }
+.resultados li a[aria-selected="true"], .resultados li a:hover { background: var(--marca-suave); }
+.resultados .cap { font-family: var(--f-dato); font-size: 11.5px; color: var(--marca); letter-spacing: .06em; text-transform: uppercase; }
+.resultados .tit { font-family: var(--f-titulo); font-weight: 700; font-size: 16px; }
+.resultados .ext { font-size: 14px; color: var(--gris); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.resultados mark { background: #fff1b8; color: inherit; border-radius: 3px; padding: 0 1px; }
+.vacio { padding: 26px 16px; text-align: center; color: var(--gris); }
+.sugerencias { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 12px; }
+.sugerencias button { border: 1px solid var(--linea); background: #fff; border-radius: 999px; padding: 6px 12px; font: 14px var(--f-texto); color: var(--tinta); cursor: pointer; }
+.sugerencias button:hover { border-color: var(--marca); }
+.paso .pantalla img { cursor: zoom-in; }
+.visor { position: fixed; inset: 0; z-index: 120; background: rgba(10,18,32,.97); overflow: auto; -webkit-overflow-scrolling: touch; display: grid; place-items: center; padding: calc(env(safe-area-inset-top) + 56px) max(12px, env(safe-area-inset-right)) calc(env(safe-area-inset-bottom) + 24px) max(12px, env(safe-area-inset-left)); }
+.visor[hidden] { display: none; }
+.visor img { width: min(1400px, 100%); border-radius: 10px; cursor: zoom-out; }
+.visor .cerrar { position: fixed; top: calc(env(safe-area-inset-top) + 12px); right: max(12px, env(safe-area-inset-right)); height: 40px; padding: 0 16px; border: 0; border-radius: 8px; background: #fff; color: var(--tinta); font: 700 14px var(--f-titulo); cursor: pointer; }
+.visor .pista { position: fixed; top: calc(env(safe-area-inset-top) + 20px); left: max(16px, env(safe-area-inset-left)); color: #c7d3e6; font-size: 13px; }
+@media (max-width: 700px) { .visor { place-items: start; } .visor img { width: 230%; max-width: none; } }
+.destello { animation: destello 1.8s ease-out; }
+@keyframes destello { 0%, 30% { box-shadow: 0 0 0 4px rgba(47,122,217,.55); } 100% { box-shadow: 0 0 0 4px rgba(47,122,217,0); } }
+</style>
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <div class="envoltura">
+    <a class="marca" href="#inicio" aria-label="Vértice Restaurant, inicio"><img src="img/logo-v.png" alt=""><span>VÉRTICE</span></a>
+    <nav class="links" aria-label="Capítulos">
+      <a href="#c3">Comandar</a><a href="#c5">Servicio</a><a href="#c6">Cobrar</a><a href="#c7">Cierre</a><a href="#c8">Problemas</a>
+    </nav>
+    <button class="abrir-buscar" id="abrirBuscar" type="button" aria-haspopup="dialog">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      Buscar en el manual<kbd>Ctrl K</kbd>
+    </button>
+    <a class="pdf-nav" href="Manual-primeros-dias-Vertice-Restaurant.pdf" download>PDF</a>
+  </div>
+</header>
+
+<main>
+<section class="hero" id="inicio">
+  <div class="envoltura">
+    <div class="eyebrow">Manual de primeros días</div>
+    <h1>Vértice Restaurant</h1>
+    <p class="bajada">Del garzón que comanda a la caja que cobra y cierra el día. Cada paso, con la pantalla real.</p>
+    <div class="acciones">
+      <a class="pill oscura" href="#recorrido">Ver el recorrido</a>
+      <a class="pill clara" href="Manual-primeros-dias-Vertice-Restaurant.pdf" download>Descargar PDF</a>
+    </div>
+    <div class="hero-pantalla"><img src="img/09-comanda-lista.png" alt="Pantalla de comandar del POS de garzones de Vértice Restaurant" width="1280" height="800" fetchpriority="high"></div>
+  </div>
+</section>
+
+<section class="cifras" aria-label="En resumen">
+  <div class="envoltura">
+    <div class="cifra"><b>7</b><span>pasos de un servicio</span></div>
+    <div class="cifra"><b>4</b><span>dígitos en el código del garzón</span></div>
+    <div class="cifra"><b>3</b><span>pasos para cerrar la caja</span></div>
+    <div class="cifra"><b>1</b><span>regla de oro</span></div>
+  </div>
+</section>
+
+<section class="gracias" id="gracias">
+  <div class="envoltura">
+    <h2>Gracias por elegirnos</h2>
+    <p>Sabemos que cambiar de sistema en plena operación no es menor, y queremos que estos primeros días sean tranquilos para todo el equipo. Esta guía cuenta el viaje completo de un servicio: léanla juntos antes del primer turno, y cada persona encontrará qué le toca a ella.</p>
+    <div class="regla" data-buscar data-cap="Bienvenida" data-tit="La regla de oro" id="regla">
+      <small>La regla de oro</small>
+      <p><strong>Todo pedido pasa por el sistema.</strong> Si algo se anota en papel o se pide de palabra a la cocina, la cuenta de la mesa queda incompleta y el cierre de caja no cuadra.</p>
+    </div>
+  </div>
+</section>
+
+<section class="recorrido" id="recorrido">
+  <div class="envoltura">
+    <h2>El viaje de un servicio</h2>
+    <ol class="viaje">
+      <li><a href="#c2"><b>Abrir caja</b><small>Cajero</small></a></li>
+      <li><a href="#c3"><b>Comandar</b><small>Garzón, con su código</small></a></li>
+      <li><a href="#c4"><b>Preparar</b><small>Cocina y barra</small></a></li>
+      <li><a href="#c6-1"><b>Pedir cuenta</b><small>Garzón; sale en caja</small></a></li>
+      <li class="acento"><a href="#c6-3"><b>Cobrar</b><small>Cajero</small></a></li>
+      <li><a href="#c6-6"><b>Por limpiar</b><small>Lista para el siguiente</small></a></li>
+      <li><a href="#c7"><b>Cerrar caja</b><small>Cajero, al final del día</small></a></li>
+    </ol>
+    <p class="nota-viaje">Los pasos 2 a 4 se repiten en cada mesa; el 1 y el 7, una vez al día.</p>
+  </div>
+</section>
+
+<!-- 01 -->
+<section class="capitulo" id="c1">
+  <div class="envoltura">
+    <div class="num">01</div>
+    <h2>El equipo y los equipos</h2>
+    <p class="lead">Cada persona entra con lo suyo y ve solo lo que necesita.</p>
+    <div class="quien"><span>Todos</span></div>
+  </div>
+</section>
+<div class="contenido"><div class="envoltura">
+  <div class="lista">
+    <div data-buscar data-cap="01 · El equipo" data-tit="Garzón" id="c1-garzon"><b>Garzón</b><span>Entra con su código personal de 4 números en el POS. Abre mesas, comanda, corrige y pide la cuenta.</span></div>
+    <div data-buscar data-cap="01 · El equipo" data-tit="Cajero" id="c1-cajero"><b>Cajero</b><span>Usuario y contraseña en la caja. Abre y cierra caja, cobra mesas, toma pedidos para llevar y delivery.</span></div>
+    <div data-buscar data-cap="01 · El equipo" data-tit="Cocina y barra" id="c1-cocina"><b>Cocina y barra</b><span>No usan pantalla: reciben la comanda impresa en su impresora.</span></div>
+    <div data-buscar data-cap="01 · El equipo" data-tit="Administrador" id="c1-admin"><b>Administrador</b><span>Usuario y contraseña. Carta, precios, personal, mesas, impresoras e informes.</span></div>
+    <div data-buscar data-cap="01 · Los equipos" data-tit="Servidor" id="c1-servidor"><b>Servidor</b><span>El computador principal. Guarda todo y hace el respaldo diario. Queda encendido durante todo el servicio.</span></div>
+    <div data-buscar data-cap="01 · Los equipos" data-tit="POS de garzones" id="c1-pos"><b>POS de garzones</b><span>Pantalla táctil, tablet o celular. Muestra solo las mesas y la comanda; no tiene salida al resto del sistema.</span></div>
+    <div data-buscar data-cap="01 · Los equipos" data-tit="Impresoras por sector" id="c1-impresoras"><b>Impresoras por sector</b><span>Cocina, barra y las que tenga el local. Cada plato sale en la impresora de su sector; la caja tiene la suya para las cuentas.</span></div>
+  </div>
+  <div class="aviso" data-buscar data-cap="01 · El equipo" data-tit="El código del garzón es personal" id="c1-codigo"><small>Importante</small><p>El código de cada garzón es personal y no se presta: con él el sistema sabe quién atendió cada mesa y a quién le corresponde la propina.</p></div>
+</div></div>
+
+<!-- 02 -->
+<section class="capitulo" id="c2">
+  <div class="envoltura">
+    <div class="num">02</div>
+    <h2>Antes de abrir</h2>
+    <p class="lead">El día empieza en el servidor y termina con la caja abierta. Sin caja abierta no se puede cobrar.</p>
+    <div class="quien"><span>Caja</span><span>Administración</span></div>
+  </div>
+</section>
+<div class="contenido"><div class="envoltura">
+  <div class="paso sin-imagen" data-buscar data-cap="02 · Antes de abrir" data-tit="Encender servidor, impresoras, caja y POS" id="c2-1">
+    <div class="ficha"><div class="n">PASOS 1–3</div><h3>Encender en orden</h3><p>Primero el servidor, y esperar a que Vértice abra completo. Después las impresoras de cocina, barra y caja, revisando que tengan papel. Al final la caja y los POS de garzones, que se conectan solos y muestran el mapa de mesas.</p></div>
+  </div>
+  <div class="paso" data-buscar data-cap="02 · Antes de abrir" data-tit="Abrir caja" id="c2-4">
+    <div class="pantalla"><img src="img/33-abrir-caja.png" alt="Ventana Abrir caja con el turno anterior y el dinero con que empieza el cajón" width="1280" height="800" loading="lazy"></div>
+    <div class="ficha"><div class="n">PASO 4</div><h3>Abrir caja</h3><p>El cajero va a <span class="boton-txt">Caja → Abrir caja</span>, escribe el dinero con que empieza el cajón (el sencillo para dar vuelto) y toca <span class="boton-txt">Abrir caja con $…</span>. Arriba ve cómo cerró el turno anterior.</p></div>
+  </div>
+  <div class="paso sin-imagen" data-buscar data-cap="02 · Antes de abrir" data-tit="Revisar la carta y los agotados" id="c2-5">
+    <div class="ficha"><div class="n">PASO 5</div><h3>Revisar la carta</h3><p>Si un plato se agotó, el administrador lo marca como agotado para que los garzones no lo ofrezcan.</p></div>
+  </div>
+</div></div>
+
+<!-- 03 -->
+<section class="capitulo" id="c3">
+  <div class="envoltura">
+    <div class="num">03</div>
+    <h2>El garzón toma la comanda</h2>
+    <p class="lead">Tocar la mesa, escribir el código, elegir los platos y enviar a cocina.</p>
+    <div class="quien"><span>Garzones</span></div>
+  </div>
+</section>
+<div class="contenido"><div class="envoltura">
+  <div class="paso" data-buscar data-cap="03 · Comandar" data-tit="Tocar la mesa y escribir el código" id="c3-1">
+    <div class="pantalla"><img src="img/03-pin.png" alt="Teclado para escribir el código del garzón al tocar la mesa M1" width="1280" height="800" loading="lazy"></div>
+    <div class="ficha"><div class="n">PASO 1</div><h3>Tocar la mesa y escribir su código</h3><p>Toca la mesa donde se sentó la gente, escribe su código de 4 números (PIN) y toca el visto azul. La mesa queda a su nombre.</p></div>
+  </div>
+  <div class="paso" data-buscar data-cap="03 · Comandar" data-tit="Cuántas personas se sientan (comensales)" id="c3-2">
+    <div class="pantalla"><img src="img/04-mesa.png" alt="Ventana Abrir mesa preguntando cuántas personas se sientan" width="1280" height="800" loading="lazy"></div>
+    <div class="ficha"><div class="n">PASO 2</div><h3>Cuántas personas se sientan</h3><p>Solo la primera vez que se abre la mesa. Si después llega o se va alguien, se cambia con <span class="boton-txt">Comensales</span>.</p></div>
+  </div>
+  <div class="paso" data-buscar data-cap="03 · Comandar" data-tit="Elegir los platos" id="c3-3">
+    <div class="pantalla"><img src="img/09-comanda-lista.png" alt="Pantalla de comandar con familias, productos, detalle de la mesa y botones" width="1280" height="800" loading="lazy"></div>
+    <div class="ficha"><div class="n">PASO 3</div><h3>Elegir los platos</h3><p>Arriba las familias (Entradas, Sopas, Bebidas…), al medio los productos con su precio. Cada toque suma una unidad y el número azul dice cuántas lleva. A la derecha se arma el detalle: lo nuevo sale en color, todavía sin enviar. Con <span class="boton-txt">−</span> y <span class="boton-txt">+</span> se cambia la cantidad.</p></div>
+  </div>
+  <div class="paso" data-buscar data-cap="03 · Comandar" data-tit="Responder lo que pregunta el plato (menú, tamaño, agregados)" id="c3-4">
+    <div class="pantalla"><img src="img/12-preguntas.png" alt="Menú ejecutivo: elegir entrada, fondo y bebestible" width="1280" height="800" loading="lazy"></div>
+    <div class="ficha"><div class="n">PASO 4</div><h3>Responder lo que pregunte el plato</h3><p>Algunos platos piden elegir: el menú con entrada, fondo y bebestible, un tamaño o un agregado con precio. <span class="boton-txt">Agregar</span> se activa cuando todo está respondido.</p></div>
+  </div>
+  <div class="paso" data-buscar data-cap="03 · Comandar" data-tit="Agregar un comentario (sin cebolla, bien cocido)" id="c3-5">
+    <div class="pantalla"><img src="img/08-comentario.png" alt="Comentario rápido Sin cebolla sobre Pollo con almendras" width="1280" height="800" loading="lazy"></div>
+    <div class="ficha"><div class="n">PASO 5</div><h3>Agregar un comentario</h3><p>Tocar el plato en el detalle y luego <span class="boton-txt">Comentario</span>. Hay comentarios rápidos (Sin cebolla, Bien cocido, Sin hielo…) y un teclado en pantalla. <span class="boton-txt">Guardar</span>: sale impreso en la comanda.</p></div>
+  </div>
+  <div class="paso" data-buscar data-cap="03 · Comandar" data-tit="Enviar a cocina" id="c3-6">
+    <div class="pantalla"><img src="img/14-mapa.png" alt="Mapa de mesas con mesas ocupadas mostrando hora, total y garzón" width="1280" height="800" loading="lazy"></div>
+    <div class="ficha"><div class="n">PASO 6</div><h3>Enviar a cocina</h3><p>El botón azul <span class="boton-txt">Enviar a cocina</span> dice cuántas unidades faltan. Al tocarlo, cada plato se imprime en su sector y el POS vuelve al mapa con el aviso verde «Comanda enviada». La mesa queda ocupada con su hora, total y garzón.</p></div>
+  </div>
+  <div class="aviso" data-buscar data-cap="03 · Comandar" data-tit="Lo que no se envía no llega a la cocina" id="c3-error"><small>El error número uno</small><p>Lo que no se envió <strong>no llega a la cocina</strong>. Si el garzón deja la mesa sin enviar, el POS vuelve solo al mapa a los pocos segundos. Antes de irse de la mesa, siempre enviar.</p></div>
+  <div class="paso sin-imagen" data-buscar data-cap="03 · Comandar" data-tit="Estados de la mesa (colores)" id="c3-estados">
+    <div class="ficha"><div class="n">ESTADOS</div><h3>Estados de la mesa</h3><p>Disponible, Ocupada, Sin pedir, Pidió la cuenta, Cuenta +5 min, Por limpiar y Reservada. Cada estado tiene su color e ícono; la leyenda está siempre al pie del mapa.</p></div>
+  </div>
+</div></div>
+
+<!-- 04 -->
+<section class="capitulo" id="c4">
+  <div class="envoltura">
+    <div class="num">04</div>
+    <h2>Cocina y barra</h2>
+    <p class="lead">Cada sector recibe solo lo suyo, impreso en su impresora.</p>
+    <div class="quien"><span>Cocina</span><span>Barra</span></div>
+  </div>
+</section>
+<div class="contenido"><div class="envoltura">
+  <div class="lista">
+    <div data-buscar data-cap="04 · Cocina y barra" data-tit="Qué trae la comanda" id="c4-1"><b>Qué trae la comanda</b><span>Mesa, garzón, hora, platos con su cantidad y los comentarios. Lo caliente sale en Cocina, los bebestibles en Barra.</span></div>
+    <div data-buscar data-cap="04 · Cocina y barra" data-tit="Aviso ANULAR o CAMBIO DE MESA" id="c4-2"><b>Anular o cambio de mesa</b><span>Si un plato enviado se anula o la mesa se cambia, la impresora del sector recibe <span class="dato">ANULAR</span> o <span class="dato">CAMBIO DE MESA</span>.</span></div>
+    <div data-buscar data-cap="04 · Cocina y barra" data-tit="Comanda urgente (Apurar)" id="c4-3"><b>Urgente</b><span>Si el garzón marca <span class="boton-txt">Apurar</span>, la comanda llega señalada como urgente.</span></div>
+  </div>
+  <div class="aviso" data-buscar data-cap="04 · Cocina y barra" data-tit="La impresora falla o no tiene papel" id="c4-falla"><small>Si la impresora falla</small><p>Si se queda sin papel o se desconecta, el POS avisa y la comanda se puede reimprimir. Nunca preparen de memoria un pedido que no salió impreso.</p></div>
+</div></div>
+
+<!-- 05 -->
+<section class="capitulo" id="c5">
+  <div class="envoltura">
+    <div class="num">05</div>
+    <h2>Durante el servicio</h2>
+    <p class="lead">La mesa se sigue trabajando hasta que se cobra.</p>
+    <div class="quien"><span>Garzones</span></div>
+  </div>
+</section>
+<div class="contenido"><div class="envoltura">
+  <div class="lista">
+    <div data-buscar data-cap="05 · Servicio" data-tit="Piden algo más" id="c5-1"><b>Piden algo más</b><span>Tocar la mesa, el código, agregar y <span class="boton-txt">Enviar a cocina</span> de nuevo.</span></div>
+    <div data-buscar data-cap="05 · Servicio" data-tit="Otra ronda (repetir lo mismo)" id="c5-2"><b>Repiten lo mismo</b><span><span class="boton-txt">Otra ronda</span> repite lo pedido; se revisa y se envía.</span></div>
+    <div data-buscar data-cap="05 · Servicio" data-tit="Anular un plato" id="c5-3"><b>Un plato no va</b><span><span class="boton-txt">Anular</span> pregunta cuántas unidades y, si ya salió a cocina, el motivo.</span></div>
+    <div data-buscar data-cap="05 · Servicio" data-tit="Dejar un plato para después" id="c5-4"><b>El plato sale más tarde</b><span><span class="boton-txt">Después</span> lo deja retenido hasta que la mesa esté lista.</span></div>
+    <div data-buscar data-cap="05 · Servicio" data-tit="Cambiar de mesa" id="c5-5"><b>Se cambian de mesa</b><span><span class="boton-txt">Cambiar</span> y elegir la nueva.</span></div>
+    <div data-buscar data-cap="05 · Servicio" data-tit="Unir o juntar mesas" id="c5-6"><b>Juntan dos mesas</b><span><span class="boton-txt">Unir</span>: queda una sola cuenta.</span></div>
+    <div data-buscar data-cap="05 · Servicio" data-tit="Apurar cocina por demora" id="c5-7"><b>Hay demora</b><span><span class="boton-txt">Apurar</span>.</span></div>
+    <div data-buscar data-cap="05 · Servicio" data-tit="Marcar servido" id="c5-8"><b>El plato ya se llevó</b><span><span class="boton-txt">Servido</span>.</span></div>
+    <div data-buscar data-cap="05 · Servicio" data-tit="Cortesía de la casa" id="c5-9"><b>Atención de la casa</b><span>Cortesía, con el código de un supervisor y su motivo.</span></div>
+  </div>
+  <div class="aviso azul" data-buscar data-cap="05 · Servicio" data-tit="La caja no cambia la cuenta del garzón" id="c5-caja"><small>Para que la cuenta no cambie sola</small><p>La caja ve y cobra todas las mesas, pero no les agrega ni les quita platos: eso lo hace el garzón de la mesa. Anulaciones y cortesías quedan registradas y aparecen en el cierre de caja.</p></div>
+</div></div>
+
+<!-- 06 -->
+<section class="capitulo" id="c6">
+  <div class="envoltura">
+    <div class="num">06</div>
+    <h2>La cuenta y el cobro</h2>
+    <p class="lead">El garzón la pide, sale impresa en la caja y la caja cobra. Al pagar, la mesa queda libre.</p>
+    <div class="quien"><span>Garzones</span><span>Caja</span></div>
+  </div>
+</section>
+<div class="contenido"><div class="envoltura">
+  <div class="paso" data-buscar data-cap="06 · Cuenta y cobro" data-tit="Pedir la cuenta" id="c6-1">
+    <div class="pantalla"><img src="img/16-pedir-cuenta.png" alt="POS después de pedir la cuenta, con el aviso verde y el botón Pedirla de nuevo" width="1280" height="800" loading="lazy"></div>
+    <div class="ficha"><div class="n">PASO 1</div><h3>El garzón toca «Pedir cuenta»</h3><p>La cuenta se imprime sola en la caja, con su número grande (<span class="dato">Cuenta #2864</span>) y la propina sugerida. La mesa pasa a «Pidió la cuenta». Si se perdió el papel, <span class="boton-txt">Pedirla de nuevo</span> la reimprime. El garzón la retira en la caja y la lleva a la mesa.</p></div>
+  </div>
+  <div class="paso" data-buscar data-cap="06 · Cuenta y cobro" data-tit="La caja abre Cobrar" id="c6-3">
+    <div class="pantalla"><img src="img/22-cobrar.png" alt="Pantalla Cobrar con buscador por número de cuenta y lista de mesas" width="1280" height="800" loading="lazy"></div>
+    <div class="ficha"><div class="n">PASO 2</div><h3>La caja abre «Cobrar»</h3><p>Arriba están las mesas que pidieron la cuenta y más abajo las que siguen consumiendo. Se toca la mesa o se escribe el número de la cuenta impresa.</p></div>
+  </div>
+  <div class="paso" data-buscar data-cap="06 · Cuenta y cobro" data-tit="Preguntar por descuento y propina" id="c6-4">
+    <div class="pantalla"><img src="img/23-cobro.png" alt="Ventana Cobrar M1 con el total con propina y la pregunta de descuento" width="1280" height="800" loading="lazy"></div>
+    <div class="ficha"><div class="n">PASO 3</div><h3>Preguntar por descuento</h3><p>El sistema muestra el total con la propina sugerida (10%) y pide preguntarle al cliente si tiene algún descuento antes de elegir cómo paga.</p></div>
+  </div>
+  <div class="paso" data-buscar data-cap="06 · Cuenta y cobro" data-tit="Medio de pago, voucher, boleta o factura y dividir la cuenta" id="c6-5">
+    <div class="pantalla"><img src="img/25-debito.png" alt="Cobro con débito: medio de pago, dividir la cuenta, número de voucher y botón Cobrar" width="1280" height="800" loading="lazy"></div>
+    <div class="ficha"><div class="n">PASO 4</div><h3>Documento y medio de pago</h3><p>Boleta o factura; luego Efectivo, Débito, Crédito, Transferencia o Cheque. Con dos medios, se escribe cuánto va con el primero y se toca el otro. Con tarjeta se anota el n° de voucher. Aquí también se divide la cuenta (entre 2, 3… o cada uno lo suyo). Se termina con <span class="boton-txt">Cobrar $…</span>.</p></div>
+  </div>
+  <div class="paso" data-buscar data-cap="06 · Cuenta y cobro" data-tit="Cuenta cobrada y mesa por limpiar" id="c6-6">
+    <div class="pantalla"><img src="img/26-cobrado.png" alt="Cuenta cobrada; la mesa M1 queda por limpiar" width="1280" height="800" loading="lazy"></div>
+    <div class="ficha"><div class="n">PASO 5</div><h3>Cobrada y por limpiar</h3><p>La cuenta queda «Cobrada» y la mesa «por limpiar» hasta que se vuelve a sentar gente. Desde aquí se ve o imprime el comprobante.</p></div>
+  </div>
+  <div class="paso" data-buscar data-cap="06 · Cuenta y cobro" data-tit="Mapa con la mesa por limpiar" id="c6-7">
+    <div class="pantalla"><img src="img/27-mapa-por-limpiar.png" alt="Mapa de mesas con M1 por limpiar" width="1280" height="800" loading="lazy"></div>
+    <div class="ficha"><div class="n">EN EL POS</div><h3>La mesa aparece con la escoba</h3><p>En el mapa del garzón, la mesa cobrada muestra «Por limpiar». Al sentar gente nueva vuelve a empezar el ciclo.</p></div>
+  </div>
+  <div class="aviso azul" data-buscar data-cap="06 · Cuenta y cobro" data-tit="Para llevar y delivery (Uber Eats, Rappi, PedidosYa)" id="c6-llevar"><small>Para llevar y delivery</small><p>El mesón toma el pedido en la caja (<span class="boton-txt">Venta directa</span>: Mesón o App de delivery), lo envía a cocina y lo cobra. Uber Eats, Rappi y PedidosYa quedan pagados por la app, con su código.</p></div>
+</div></div>
+
+<!-- 07 -->
+<section class="capitulo" id="c7">
+  <div class="envoltura">
+    <div class="num">07</div>
+    <h2>Cierre del día</h2>
+    <p class="lead">Todas las mesas cobradas y la caja cuadrada en tres pasos.</p>
+    <div class="quien"><span>Caja</span></div>
+  </div>
+</section>
+<div class="contenido"><div class="envoltura">
+  <div class="paso" data-buscar data-cap="07 · Cierre" data-tit="Cerrar caja: contar el efectivo" id="c7-1">
+    <div class="pantalla"><img src="img/28-cierre-1.png" alt="Cerrar caja, paso 1: aviso de cuentas sin cobrar y conteo de billetes y monedas" width="1280" height="800" loading="lazy"></div>
+    <div class="ficha"><div class="n">PASO 1</div><h3>Contar el efectivo</h3><p>En <span class="boton-txt">Caja → Cerrar caja</span> se anota cuántos billetes y monedas hay de cada uno, incluido el sencillo con que se abrió. Si quedan cuentas sin cobrar, el sistema las muestra arriba: cóbrenlas antes de cerrar.</p></div>
+  </div>
+  <div class="paso sin-imagen" data-buscar data-cap="07 · Cierre" data-tit="Tarjetas, transferencias y datáfono" id="c7-2">
+    <div class="ficha"><div class="n">PASO 2</div><h3>Tarjetas y transferencias</h3><p>Sacar el cierre del datáfono (el voucher de totales) y compararlo con lo que dice el sistema para débito, crédito, transferencias y cheques.</p></div>
+  </div>
+  <div class="paso" data-buscar data-cap="07 · Cierre" data-tit="Confirmar el cierre: cuadró o no cuadra" id="c7-3">
+    <div class="pantalla"><img src="img/30-cierre-3.png" alt="Cerrar caja, paso 3: resultado Cuadró con cada medio de pago" width="1280" height="800" loading="lazy"></div>
+    <div class="ficha"><div class="n">PASO 3</div><h3>Confirmar</h3><p>El sistema muestra si la caja cuadró, medio por medio. Si no cuadra, hay que anotar qué pasó y solo un administrador puede autorizar el cierre con su código. Al tocar <span class="boton-txt">Cerrar caja</span> el turno queda guardado y sale el reporte.</p></div>
+  </div>
+  <div class="lista">
+    <div data-buscar data-cap="07 · Después del cierre" data-tit="Control del turno: anulaciones, cortesías y descuentos" id="c7-4"><b>Control del turno</b><span>Revisar anulaciones, cortesías y descuentos del día.</span></div>
+    <div data-buscar data-cap="07 · Después del cierre" data-tit="Pagar las propinas" id="c7-5"><b>Propinas</b><span>Pagarlas con el detalle de Propinas del turno por garzón, en efectivo y tarjeta.</span></div>
+    <div data-buscar data-cap="07 · Después del cierre" data-tit="Apagar equipos y respaldo" id="c7-6"><b>Apagar</b><span>Primero los POS y la caja. El servidor hace su respaldo diario; se apaga al final, nunca a mitad del servicio.</span></div>
+  </div>
+</div></div>
+
+<!-- 08 -->
+<section class="capitulo" id="c8">
+  <div class="envoltura">
+    <div class="num">08</div>
+    <h2>Primeros días y problemas frecuentes</h2>
+    <p class="lead">La primera semana se aprende haciendo. Esto evita los tropiezos más comunes.</p>
+    <div class="quien"><span>Todos</span></div>
+  </div>
+</section>
+<div class="contenido"><div class="envoltura">
+  <div class="lista">
+    <div data-buscar data-cap="08 · Consejos" data-tit="Practicar antes de abrir" id="c8-1"><b>Practiquen antes de abrir</b><span>Cada garzón abre una mesa de prueba, comanda, anula un plato y pide la cuenta.</span></div>
+    <div data-buscar data-cap="08 · Consejos" data-tit="Encargado de turno" id="c8-2"><b>Un encargado de turno</b><span>Alguien que conozca bien el sistema y resuelva dudas en el momento.</span></div>
+    <div data-buscar data-cap="08 · Problemas" data-tit="Código incorrecto en el POS" id="c8-3"><b>«Código incorrecto» en el POS</b><span>Revisar el código con el administrador. Tras 5 intentos fallidos el equipo espera un minuto.</span></div>
+    <div data-buscar data-cap="08 · Problemas" data-tit="La comanda no salió impresa" id="c8-4"><b>La comanda no salió</b><span>Revisar papel y cable de la impresora del sector, y reimprimir desde la mesa.</span></div>
+    <div data-buscar data-cap="08 · Problemas" data-tit="La cuenta no salió en la caja" id="c8-5"><b>La cuenta no salió en la caja</b><span>Revisar la impresora de la caja y tocar <span class="boton-txt">Pedirla de nuevo</span>.</span></div>
+    <div data-buscar data-cap="08 · Problemas" data-tit="Mesa abierta sin pedidos" id="c8-6"><b>Mesa abierta sin pedidos</b><span>El POS pregunta al salir si se sentaron; si no, la libera.</span></div>
+    <div data-buscar data-cap="08 · Problemas" data-tit="Ventana con código de error VR" id="c8-7"><b>Ventana con código <span class="dato">VR-###</span></b><span>Anotar el código y llamar a soporte.</span></div>
+    <div data-buscar data-cap="08 · Problemas" data-tit="Olvidé la contraseña del administrador (SOS)" id="c8-8"><b>Olvidé la contraseña</b><span>En la pantalla de ingreso, tocar <span class="boton-txt">SOS · Olvidé mi contraseña</span> y llamar a soporte con el código que aparece.</span></div>
+  </div>
+</div></div>
+</main>
+
+<!-- 09 -->
+<section class="soporte" id="c9">
+  <div class="envoltura" data-buscar data-cap="09 · Soporte" data-tit="Contacto de soporte" id="c9-1">
+    <div class="num">09</div>
+    <h2>Soporte</h2>
+    <p>Estamos con ustedes estos primeros días. Ante cualquier duda o ventana de error, llámennos antes de improvisar: digan qué equipo falló, qué estaban haciendo y el código VR si apareció.</p>
+    <div class="contactos">
+      <div><small>Teléfono / WhatsApp</small><span>por completar</span></div>
+      <div><small>Horario</small><span>por completar</span></div>
+    </div>
+    <a class="pill clara" href="Manual-primeros-dias-Vertice-Restaurant.pdf" download>Descargar el manual en PDF</a>
+  </div>
+</section>
+<footer><div class="envoltura"><span>Vértice Restaurant · un sistema de Zetrix</span><span>Manual de primeros días · versión 1.0.6 · octubre 2026</span></div></footer>
+
+<div class="buscador" id="buscador" role="dialog" aria-modal="true" aria-label="Buscar en el manual" hidden>
+  <div class="caja-buscar">
+    <div class="campo">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="Ej.: anular, propina, voucher, impresora…" autocomplete="off" aria-controls="resultados">
+      <button type="button" id="cerrarBuscar">Esc</button>
+    </div>
+    <ul class="resultados" id="resultados" role="listbox"></ul>
+  </div>
+</div>
+
+<div class="visor" id="visor" role="dialog" aria-modal="true" aria-label="Pantalla ampliada" hidden>
+  <span class="pista">Desliza para recorrer la pantalla</span>
+  <button class="cerrar" type="button" id="cerrarVisor">Cerrar</button>
+  <img id="visorImg" alt="">
+</div>
+
+<script>
+(function () {
+  var visor = document.getElementById('visor'), vImg = document.getElementById('visorImg');
+  var cerrarVisor = function () { visor.hidden = true; document.body.style.overflow = ''; };
+  document.addEventListener('click', function (e) {
+    var img = e.target.closest('.paso .pantalla img'); if (!img) return;
+    vImg.src = img.src; vImg.alt = img.alt; visor.hidden = false; document.body.style.overflow = 'hidden'; visor.scrollTo(0, 0);
+    document.getElementById('cerrarVisor').focus();
+  });
+  document.getElementById('cerrarVisor').addEventListener('click', cerrarVisor);
+  vImg.addEventListener('click', function () { if (innerWidth > 700) cerrarVisor(); });
+  visor.addEventListener('click', function (e) { if (e.target === visor) cerrarVisor(); });
+  addEventListener('keydown', function (e) { if (e.key === 'Escape' && !visor.hidden) cerrarVisor(); });
+})();
+(function () {
+  var nav = document.getElementById('nav');
+  addEventListener('scroll', function () { nav.classList.toggle('con-borde', scrollY > 8); }, { passive: true });
+
+  var norm = function (s) { return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); };
+  var items = Array.prototype.map.call(document.querySelectorAll('[data-buscar]'), function (el) {
+    var txt = (el.querySelector('.ficha p, span, p') || el).textContent.replace(/\s+/g, ' ').trim();
+    var todo = el.dataset.tit + ' ' + el.textContent.replace(/\s+/g, ' ');
+    return { el: el, id: el.id, cap: el.dataset.cap, tit: el.dataset.tit, txt: txt, clave: norm(todo), titN: norm(el.dataset.tit) };
+  });
+
+  var caja = document.getElementById('buscador'), q = document.getElementById('q'), lista = document.getElementById('resultados');
+  var sel = 0, actuales = [], ultimoFoco = null;
+  var esc = function (s) { return s.replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  var marcar = function (texto, palabras) {
+    var t = esc(texto), n = norm(t);
+    palabras.forEach(function (p) {
+      if (!p) return; var i = n.indexOf(p); if (i < 0) return;
+      t = t.slice(0, i) + '<mark>' + t.slice(i, i + p.length) + '</mark>' + t.slice(i + p.length);
+      n = n.slice(0, i) + '<mark>' + n.slice(i, i + p.length) + '</mark>' + n.slice(i + p.length);
+    });
+    return t;
+  };
+  var sugerencias = ['anular', 'propina', 'voucher', 'impresora', 'dividir', 'cerrar caja', 'código'];
+
+  function pintar() {
+    var v = norm(q.value.trim()), palabras = v.split(/\s+/).filter(Boolean);
+    if (!palabras.length) {
+      actuales = [];
+      lista.innerHTML = '<li class="vacio">Busca un paso, un botón o un problema.<div class="sugerencias">' + sugerencias.map(function (s) { return '<button type="button" data-s="' + s + '">' + s + '</button>'; }).join('') + '</div></li>';
+      return;
+    }
+    actuales = items.map(function (it) {
+      var ok = palabras.every(function (p) { return it.clave.indexOf(p) >= 0; });
+      if (!ok) return null;
+      var puntos = palabras.reduce(function (a, p) { return a + (it.titN.indexOf(p) >= 0 ? 3 : 1); }, 0);
+      return { it: it, puntos: puntos };
+    }).filter(Boolean).sort(function (a, b) { return b.puntos - a.puntos; }).slice(0, 12).map(function (r) { return r.it; });
+    sel = 0;
+    if (!actuales.length) { lista.innerHTML = '<li class="vacio">No encontramos «' + esc(q.value) + '». Prueba con otra palabra, como «cobrar» o «mesa».</li>'; return; }
+    lista.innerHTML = actuales.map(function (it, i) {
+      return '<li><a href="#' + it.id + '" role="option" aria-selected="' + (i === sel) + '" data-i="' + i + '"><span class="cap">' + esc(it.cap) + '</span><span class="tit">' + marcar(it.tit, palabras) + '</span><span class="ext">' + marcar(it.txt.slice(0, 180), palabras) + '</span></a></li>';
+    }).join('');
+  }
+  function mover(d) {
+    if (!actuales.length) return;
+    sel = (sel + d + actuales.length) % actuales.length;
+    lista.querySelectorAll('a').forEach(function (a, i) { a.setAttribute('aria-selected', i === sel); if (i === sel) a.scrollIntoView({ block: 'nearest' }); });
+  }
+  function ir(i) {
+    var it = actuales[i]; if (!it) return;
+    cerrar(false);
+    history.replaceState(null, '', '#' + it.id);
+    it.el.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+    var objetivo = it.el.querySelector('.pantalla') || it.el;
+    objetivo.classList.remove('destello'); void objetivo.offsetWidth; objetivo.classList.add('destello');
+  }
+  function abrir() { ultimoFoco = document.activeElement; caja.hidden = false; document.body.style.overflow = 'hidden'; pintar(); q.focus(); q.select(); }
+  function cerrar(devolverFoco) { caja.hidden = true; document.body.style.overflow = ''; if (devolverFoco !== false && ultimoFoco) ultimoFoco.focus(); }
+
+  document.getElementById('abrirBuscar').addEventListener('click', abrir);
+  document.getElementById('cerrarBuscar').addEventListener('click', function () { cerrar(); });
+  caja.addEventListener('click', function (e) { if (e.target === caja) cerrar(); });
+  q.addEventListener('input', pintar);
+  lista.addEventListener('click', function (e) {
+    var s = e.target.closest('[data-s]'); if (s) { q.value = s.dataset.s; pintar(); q.focus(); return; }
+    var a = e.target.closest('a[data-i]'); if (a) { e.preventDefault(); ir(+a.dataset.i); }
+  });
+  q.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowDown') { e.preventDefault(); mover(1); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); mover(-1); }
+    else if (e.key === 'Enter') { e.preventDefault(); ir(sel); }
+  });
+  addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !caja.hidden) { cerrar(); return; }
+    var escribiendo = /input|textarea|select/i.test(document.activeElement.tagName);
+    if ((e.key === 'k' && (e.ctrlKey || e.metaKey)) || (e.key === '/' && !escribiendo)) { e.preventDefault(); caja.hidden ? abrir() : cerrar(); }
+  });
+})();
+</script>
+</body>
+</html>
